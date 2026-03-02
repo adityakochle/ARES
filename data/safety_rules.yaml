@@ -1,0 +1,189 @@
+# ARES Safety Rules Database
+# Last Updated: February 2026
+
+last_updated: "2026-02-13"
+
+equipment_limits:
+  main_engine:
+    bearing_temperature:
+      normal_max: 75
+      warning: 80
+      critical: 90
+      unit: celsius
+      description: "Bearing temperature limit for Wärtsilä RTA96-C main engine"
+    
+    lube_oil_pressure:
+      normal_min: 2.5
+      warning: 2.0
+      critical: 1.5
+      unit: bar
+      description: "Lube oil discharge pressure"
+    
+    vibration_amplitude:
+      normal_max: 5
+      warning: 8
+      critical: 12
+      unit: mm/s
+      description: "Vibration measurement"
+
+  auxiliary_engine:
+    bearing_temperature:
+      normal_max: 70
+      warning: 75
+      critical: 85
+      unit: celsius
+    
+    fuel_pressure:
+      normal_min: 2.0
+      warning: 1.5
+      critical: 1.0
+      unit: bar
+
+  steering_gear:
+    hydraulic_pressure:
+      normal_min: 140
+      warning: 120
+      critical: 100
+      unit: bar
+      description: "Steering gear hydraulic system pressure"
+    
+    response_time:
+      normal_max: 60
+      warning: 80
+      critical: 120
+      unit: seconds
+      description: "Steering command response time"
+
+  purifier_clarifier:
+    feed_temperature:
+      normal_min: 90
+      normal_max: 98
+      warning_low: 85
+      warning_high: 102
+      unit: celsius
+      description: "Fuel oil feed temperature to centrifugal purifier/clarifier"
+
+    bowl_back_pressure:
+      normal_max: 0.5
+      warning: 0.7
+      critical: 1.0
+      unit: bar
+      description: "Back pressure on purifier bowl outlet"
+
+    bearing_temperature:
+      normal_max: 70
+      warning: 80
+      critical: 90
+      unit: celsius
+      description: "Purifier spindle bearing temperature"
+
+    vibration_amplitude:
+      normal_max: 3
+      warning: 6
+      critical: 10
+      unit: mm/s
+      description: "Purifier bowl vibration — excessive vibration indicates imbalance or sludge buildup"
+
+    throughput_flow:
+      normal_min: 0.5
+      warning: 0.3
+      critical: 0.2
+      unit: m3/h
+      description: "Fuel oil throughput — low flow indicates blocked nozzles or bowl seal failure"
+
+  pumps_compressors:
+    discharge_pressure:
+      normal_min: 2.5
+      warning: 2.0
+      critical: 1.5
+      unit: bar
+    
+    outlet_temperature:
+      normal_max: 65
+      warning: 75
+      critical: 85
+      unit: celsius
+
+interlocks:
+  main_engine:
+    - name: "Low Lube Oil Pressure Trip"
+      trigger: "lube_oil_pressure < 1.5"
+      action: "automatic_slowdown"
+      override_allowed: false
+      description: "Automatic engine slowdown to protect bearings"
+    
+    - name: "High Bearing Temperature Trip"
+      trigger: "bearing_temperature > 90"
+      action: "automatic_shutdown"
+      override_allowed: false
+      description: "Engine shutdown to prevent bearing seizure"
+  
+  steering_gear:
+    - name: "Low Hydraulic Pressure Trip"
+      trigger: "hydraulic_pressure < 100"
+      action: "switch_to_emergency_steering"
+      override_allowed: true
+      description: "Switch to emergency hand steering system"
+
+  purifier_clarifier:
+    - name: "High Vibration Trip"
+      trigger: "vibration_amplitude > 10"
+      action: "automatic_shutdown"
+      override_allowed: false
+      description: "Purifier shutdown on excessive bowl vibration to prevent catastrophic failure"
+
+    - name: "High Bearing Temperature Trip"
+      trigger: "bearing_temperature > 90"
+      action: "automatic_shutdown"
+      override_allowed: false
+      description: "Purifier shutdown to prevent spindle bearing seizure"
+
+    - name: "Low Feed Temperature Alarm"
+      trigger: "feed_temperature < 85"
+      action: "alarm_and_reduce_throughput"
+      override_allowed: true
+      description: "Reduce throughput when fuel is too cold for effective separation"
+
+contraindications:
+  - condition: "bearing_temperature > 85"
+    prohibited_actions:
+      - "increase_rpm"
+      - "disable_cooling"
+      - "increase_load"
+    reason: "Risk of bearing seizure with elevated temperatures"
+  
+  - condition: "lube_oil_pressure < 2.0"
+    prohibited_actions:
+      - "high_speed_operation"
+      - "maneuver_at_full_power"
+    reason: "Insufficient lubrication for aggressive operations"
+  
+  - condition: "hydraulic_pressure < 120"
+    prohibited_actions:
+      - "tight_turn_maneuver"
+      - "high_speed_course_change"
+    reason: "Reduced steering system effectiveness"
+  
+  - condition: "pump_cavitation_detected"
+    prohibited_actions:
+      - "increase_discharge_pressure"
+      - "reduce_inlet_pressure"
+    reason: "Risk of pump damage escalation"
+
+  - condition: "purifier_vibration_amplitude > 6"
+    prohibited_actions:
+      - "increase_throughput"
+      - "override_vibration_trip"
+    reason: "High bowl vibration — risk of catastrophic bowl failure and fire"
+
+  - condition: "purifier_feed_temperature < 85"
+    prohibited_actions:
+      - "increase_throughput_flow"
+      - "bypass_heater"
+    reason: "Cold fuel has high viscosity; separation efficiency drops and bowl may become unbalanced"
+
+  - condition: "purifier_bearing_temperature > 80"
+    prohibited_actions:
+      - "increase_bowl_speed"
+      - "disable_lube_oil_flow"
+    reason: "Risk of spindle bearing seizure in purifier"

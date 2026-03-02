@@ -1,0 +1,120 @@
+research_task:
+  description: >
+    Search the maritime technical documentation knowledge base for information relevant
+    to the reported fault: {fault_description}
+    Equipment involved: {equipment}
+
+    Use the maritime_knowledge_search tool with targeted queries to retrieve:
+    - SOP sections applicable to the reported symptoms
+    - Equipment specifications and normal operating parameters
+    - Known fault patterns or troubleshooting procedures
+    - Any safety-critical information related to the equipment or condition
+
+    Run at least 3 searches with different query angles to maximise coverage.
+    Every fact you report MUST include a bracketed citation immediately after it,
+    e.g. "Maximum exhaust temperature is 450°C [mainenginemanual.pdf, p.312]".
+    Do NOT omit page numbers — they are required for the engineer to verify each claim.
+  expected_output: >
+    A structured technical context report with INLINE CITATIONS on every claim.
+    Format every citation as: [filename, p.PAGE_NUMBER]
+
+    Sections:
+    - Equipment specifications and normal operating ranges [cited]
+    - Applicable SOP sections [cited]
+    - Known fault patterns matching the symptoms [cited]
+    - Safety-critical warnings [cited]
+
+    End with a numbered BIBLIOGRAPHY:
+    [1] mainenginemanual.pdf, page X — <one-line description>
+    [2] mainenginemanual.pdf, page Y — <one-line description>
+    ...
+  agent: researcher_agent
+
+analysis_task:
+  description: >
+    Based on the fault description and the technical context retrieved by the researcher,
+    analyse the failure pattern and determine the root cause.
+
+    Fault: {fault_description}
+    Equipment: {equipment}
+
+    Perform the following:
+    1. Identify the most probable root cause with step-by-step reasoning grounded in the
+       retrieved passages. Do NOT use general maritime knowledge — use only what the
+       researcher retrieved.
+    2. Assess severity using these strict criteria (do NOT default to HIGH):
+       - CRITICAL: immediate risk to propulsion, life safety, or structural integrity — stop now
+       - HIGH: will escalate to critical within 2-4 hours without intervention
+       - MEDIUM: stable fault; address at next maintenance window (days to weeks)
+       - LOW: no operational impact; monitor trend only
+    3. Assign a confidence score between 0.0 and 1.0 derived from evidence quality:
+       - 0.85-1.0: retrieved passages directly describe this exact fault and procedure
+       - 0.65-0.84: retrieved passages describe similar faults or partial procedures
+       - 0.40-0.64: only indirect or tangential evidence found
+       - below 0.40: little relevant content retrieved
+    4. Identify potential cascade failures and secondary effects, citing the manual pages.
+    5. List immediate actions — ONLY steps explicitly stated in the retrieved passages.
+    6. Provide repair steps drawn EXCLUSIVELY from the retrieved passages. Quote or closely
+       paraphrase the manual text. Each step must have a page citation. Omit any step not
+       supported by a retrieved passage — do not invent steps from general knowledge.
+    7. Use EXACT citation format [filename, p.PAGE_NUMBER] throughout.
+  expected_output: >
+    A detailed failure analysis report containing:
+    - Probable root cause with reasoning chain derived from retrieved passages (step-by-step)
+    - Severity assessment: CRITICAL / HIGH / MEDIUM / LOW with explicit justification
+    - Confidence score between 0.0 and 1.0 (derive from evidence quality; do NOT default to 0.85)
+    - Potential cascade failures citing manual pages
+    - Immediate actions (numbered list, each citing the source page, from retrieved text only)
+    - Repair steps (numbered list, each citing the source page, from retrieved text only — no invented steps)
+    - Safety notes with citations [filename, p.PAGE_NUMBER]
+
+    PRESERVE the full BIBLIOGRAPHY from the researcher output at the end.
+  agent: analyst_agent
+
+validation_task:
+  description: >
+    Review the analyst's proposed diagnostic and repair steps against maritime safety rules.
+
+    Use the safety_rules_check tool to validate proposed actions against contraindications.
+    Check that all recommendations comply with manufacturer interlocks, equipment limits,
+    and safety protocols. Remove or flag any prohibited actions.
+
+    Also check: every repair step and immediate action must carry a [filename, p.PAGE_NUMBER]
+    citation from the bibliography. Flag any step that lacks a citation as UNVERIFIED and
+    remove it from the final report — do not pass through uncited steps.
+
+    Produce the final validated diagnostic report in a clear structured format, suitable
+    for a ship's engineer to act on immediately.
+  expected_output: >
+    Final validated diagnostic report structured as follows:
+
+    FAULT SUMMARY: (1-2 sentence description)
+
+    PROBABLE CAUSE: (root cause with reasoning)
+
+    SEVERITY: CRITICAL | HIGH | MEDIUM | LOW
+    (Justify the severity level in one sentence — do not simply state it)
+    CONFIDENCE: (computed from evidence quality — 0.85-1.0 if manual pages directly describe this fault,
+    0.65-0.84 if similar faults described, 0.40-0.64 if only indirect evidence, below 0.40 if sparse)
+
+    IMMEDIATE ACTIONS:
+    1. ...
+    2. ...
+
+    REPAIR STEPS:
+    1. ...
+    2. ...
+
+    SOP REFERENCES:
+    - [filename, p.PAGE_NUMBER] — description of what the page covers
+    (copy ALL bibliography entries from the researcher; do not drop any)
+
+    SAFETY NOTES:
+    - (critical safety information with page citation)
+
+    CONTRAINDICATIONS (do NOT perform):
+    - (prohibited actions and reasons)
+
+    VALIDATION STATUS: PASS | FAIL
+    (If FAIL: list specific violations found)
+  agent: validator_agent
