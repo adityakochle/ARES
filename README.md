@@ -96,7 +96,7 @@ flowchart LR
 
 ---
 
-⚠️ Known Limitations & Edge Cases
+## Known Limitations & Edge Cases ⚠️
 1. Hardware Connectivity: Currently requires a cloud connection; transition to local "Edge" LLM deployment is required for deep-sea operations without Starlink.
 2. Legacy Documentation: Reliability decreases on hand-written or poorly scanned pre-1990 manuals where OCR accuracy is below 85%.
 3. Sensor Noise: Extremely noisy telemetry data can lead to "Over-caution" from the Analyst Agent.
@@ -113,6 +113,11 @@ flowchart LR
 - **Source verification mode** — `--cite` flag appends the raw retrieved passages after the report so engineers can verify claims in the physical manual
 - **Direct knowledge search** — `ares search` queries the indexed documents without running the full diagnostic pipeline
 - **10 equipment systems** — main engine, auxiliary engine, fuel oil purifier, purifier/clarifier, steering gear, pumps, HVAC, boilers, electrical, safety systems
+
+---
+
+##  The Context ⚓
+Built by a former Marine Engineer Officer (Top 0.01% Indian Naval Selection Board Candidate) with 2+ years managing mission-critical vessel systems. My background in "Zero-Downtime" maritime environments informed every safety guardrail and diagnostic logic loop in this system.
 
 ---
 
