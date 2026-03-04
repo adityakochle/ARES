@@ -259,19 +259,6 @@ ares benchmark run
 ares benchmark report
 ```
 
-**Example report output:**
-```
-Metric                  Value
-Total Scenarios         150
-Correct Diagnoses       127
-Accuracy                84.7%
-Avg Time (s)            38.4
-Safety Violations       0
-Avg Confidence          0.79
-```
-
----
-
 ## Performance & Accuracy
 
 ### 150-Case Simulation Benchmark
@@ -299,13 +286,6 @@ The benchmark runs 150 synthetic fault scenarios across 7 equipment categories a
 | HVAC / Refrigeration | 20 | 80% | Fewer indexed pages |
 | Electrical (phase imbalance) | 15 | 80% | Indirect symptom chains |
 | Safety Systems (sensor faults) | 15 | 80% | Low signal in retrieved passages |
-
-Run the benchmark yourself:
-```bash
-ares benchmark generate --count 150
-ares benchmark run
-ares benchmark report
-```
 
 ---
 
