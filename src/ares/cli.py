@@ -320,12 +320,13 @@ def benchmark(
         console.print("[bold blue]ARES Benchmark Suite[/bold blue]\n")
         
         if action == "generate":
-            console.print(f"[cyan]Generating {count} test scenarios...[/cyan]")
             scenarios = ScenarioGenerator.generate_default_scenarios()
-            
+            scenarios = scenarios[:count]  # honour the --count flag
+            console.print(f"[cyan]Generating {len(scenarios)} test scenarios...[/cyan]")
+
             output_path = "data/benchmarks/scenarios.json"
             ScenarioGenerator.save_scenarios(scenarios, output_path)
-            
+
             console.print(f"[green]✓ Generated {len(scenarios)} scenarios[/green]")
             console.print(f"[cyan]Saved to: {output_path}[/cyan]")
         
