@@ -9,6 +9,14 @@ Built by a former Marine Engineer Officer.
 
 ---
 
+## 🎬 See It In Action
+
+> Watch ARES diagnose a live purifier fault in under 60 seconds — with every repair step cited back to an exact manual page.
+
+https://github.com/user-attachments/assets/9acf716d-c7b2-4806-a686-4992b272c532
+
+---
+
 ## Key Project Results 🚀
 - 71% Reduction in MTTR: Average diagnostic time dropped from 4.5 hours to 1.3 hours.
 - $250K+ Projected Savings per Vessel: (Based on avoiding ~2.6 "Prolonged Downtime" events annually via faster intervention).
