@@ -13,7 +13,7 @@ Built by a former Marine Engineer Officer.
 
 > Watch ARES diagnose a live purifier fault in under 60 seconds — with every repair step cited back to an exact manual page.
 
-https://github.com/user-attachments/assets/9acf716d-c7b2-4806-a686-4992b272c532
+<video src ="https://github.com/user-attachments/assets/9acf716d-c7b2-4806-a686-4992b272c532" controls width ="100%"></video>
 
 ---
 
